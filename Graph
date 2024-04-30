@@ -1,0 +1,97 @@
+#include <SFML/Graphics.hpp>
+#include <cmath>
+
+using namespace sf;
+
+int Graph(int num, double** matrix){
+	const int width = 600;
+	const int height = 600;
+	int x0 = width / 2;
+	int y0 = height / 2;
+	const int leftedge = -5;
+	const int rightedge = 5;
+	int step = 20;
+	float between = 400;
+	const int quantity = (leftedge * (-1) + rightedge) * between + 1; //+1 - центральная точка
+
+	RenderWindow window(VideoMode(width, height), "SFML works!");
+	CircleShape point(1.f);
+	point.setFillColor(Color::Red);
+
+	RectangleShape line[40];
+	for (int i = 0; i < 40; i++) {
+		line[i].setSize(Vector2f(1, 20));
+		line[i].setFillColor(Color::Black);
+
+		if (i < 20) {
+			if (i < 10)
+				line[i].setPosition(x0 - (i + 1) * step, y0 - 10);
+			else
+				line[i].setPosition(x0 + (i - 9) * step, y0 - 10);
+		}
+		else {
+			line[i].setRotation(90);
+			if (i < 30)
+				line[i].setPosition(x0 + 10, y0 + (i - 30) * step);
+			else
+				line[i].setPosition(x0 + 10, y0 + (i - 29) * step);
+		}
+	}
+
+	RectangleShape OsX(Vector2f(width, 1));
+	OsX.setFillColor(Color::Black);
+	OsX.setPosition(0, y0);
+
+	RectangleShape OsY(Vector2f(1, height));
+	OsY.setFillColor(Color::Black);
+	OsY.setPosition(x0, 0);
+
+	RectangleShape strel[4];
+	for (int i = 0; i < 4; i++) {
+		strel[i].setSize(Vector2f(1, 25));
+		strel[i].setFillColor(Color::Black);
+
+		if (i < 2)
+			strel[i].setPosition(x0, 0);
+		else
+			strel[i].setPosition(width, y0);
+	}
+	strel[0].setRotation(25);
+	strel[1].setRotation(-25);
+	strel[2].setRotation(60);
+	strel[3].setRotation(-250);
+
+	while (window.isOpen())
+	{
+		Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == Event::Closed)
+				window.close();
+		}
+		window.clear(Color::White);
+		window.draw(OsX);
+		window.draw(OsY);
+		for (int i = 0; i < 4; i++)
+			window.draw(strel[i]);
+		for (int i = 0; i < 40; i++)
+			if (i != 19 && i != 20)
+				window.draw(line[i]);
+		for (int i = 0; i < quantity; i++) {
+			float tempx = leftedge + i / between;
+			float tempy = 0;
+			for (int i = 0; i < num; i++) {
+				tempy += *(*(matrix + i) + num) * pow(tempx, i);
+			}
+
+			float curx = x0 + tempx * step;
+			float cury = y0 - tempy * step;
+
+			point.setPosition(curx - 1, cury - 1);
+			window.draw(point);
+		}
+		window.display();
+	}
+
+	return 0;
+}
