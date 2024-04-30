@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <cmath>
+#include "Header.h"
+
+int main() {
+    int num;
+    float* xarray, * yarray;
+    puts("Input the number of known points:");
+    scanf_s("%d", &num);
+    xarray = new float[10];
+    yarray = new float[10];
+    puts("Input the coordinates of these points:\n");
+    for (int i = 0; i < num; i++) {
+        scanf_s("%f %f", &xarray[i], &yarray[i]);
+    }
+    puts("\nInputed points:\n");
+    for (int i = 0; i < num; i++) {
+        printf("( %.2f ; %.2f )  ", xarray[i], yarray[i]);
+    }
+    puts("\n");
+    double** matrix;
+    matrix = new double* [num];
+    Jordan_Gaus(matrix, num, xarray, yarray);
+    float needx;
+    printf("Input the necessary coordinate x: ");
+    scanf_s("%f", &needx);
+    float needy = 0;
+    for (int i = 0; i < num; i++) {
+        needy += matrix[i][num] * pow(needx, i);
+    }
+    printf("the x coordinate with this value corresponds to y = %.2f\n", needy);
+    Graph(num, matrix);
+
+    return 0;
+}
