@@ -1,0 +1,4 @@
+int Jordan_Gaus(double** matrix, int num, float* xarray, float* yarray);
+int Check1(double** matrix, int lines, int columns, int j);
+int Check2(double** matrix, int lines, int columns, int j);
+int Graph(int num, double** matrix);
