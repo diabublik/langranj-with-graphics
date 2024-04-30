@@ -1,0 +1,157 @@
+#include <stdio.h>
+#include <cmath>
+#include "Header.h"
+
+int Check1(double** matrix, int lines, int columns, int j) {
+	if (*(*(matrix + j) + j) == 0) {
+		int needline = j;
+		while (needline < lines && *(*(matrix + needline) + j) == 0.000000) {
+			needline++;
+		}
+		if (needline == lines) {
+			return 1;
+		}
+		else {
+			double* temp = *(matrix + needline);
+			*(matrix + needline) = *(matrix + j);
+			*(matrix + j) = temp;
+		}
+		puts("-----------------------------Swap lines----------------------------\n");
+		for (int i = 0; i < lines; i++) {
+			for (int j = 0; j < columns; j++) {
+				printf("%8.2lf", *(*(matrix + i) + j));
+				if (j == columns - 2) printf(" |");
+			}
+			puts("");
+		}
+		puts("\n-------------------------------------------------------------------");
+	}
+	return 0;
+}
+
+int Check2(double** matrix, int lines, int columns, int j) {
+	if (*(*(matrix + j) + j) == 0) {
+		int needline = j;
+		while (needline >= 0 && *(*(matrix + needline) + j) == 0.000000) {
+			needline--;
+		}
+		if (needline < 0) {
+			return 1;
+		}
+		else {
+			double* temp = *(matrix + needline);
+			*(matrix + needline) = *(matrix + j);
+			*(matrix + j) = temp;
+		}
+		puts("-----------------------------Swap lines----------------------------\n");
+		for (int i = 0; i < lines; i++) {
+			for (int j = 0; j < columns; j++) {
+				printf("%8.2lf", *(*(matrix + i) + j));
+				if (j == columns - 2) printf(" |");
+			}
+			puts("");
+		}
+		puts("\n-------------------------------------------------------------------");
+	}
+	return 0;
+}
+
+int Jordan_Gaus(double** matrix, int num, float* xarray, float* yarray) {
+	int lines = num, columns = num + 1;
+
+	for (int i = 0; i < lines; i++) {
+		matrix[i] = new double[columns];
+		for (int j = 0; j < columns - 1; j++) {
+			matrix[i][j] = pow(xarray[i], j);
+		}
+		matrix[i][num] = yarray[i];
+	}
+
+	puts("-----------------------------Calculate-----------------------------\n");
+	for (int i = 0; i < lines; i++) {
+		for (int j = 0; j < columns; j++) {
+			printf("%8.2lf", *(*(matrix + i) + j));
+			if (j == columns - 2) printf(" |");
+		}
+		puts("");
+	}
+	puts("\n-------------------------------------------------------------------");
+
+	int posmainval = 0;
+	for (int j = 0; j < columns - 2; j++) {
+		if (Check1(matrix, lines, columns, j) == 1) {
+			printf("The system has an infinitely many solutions\n");
+			return 0;
+		}
+		else {
+			for (int i = j + 1; i < lines; i++) {
+				if (*(*(matrix + i) + j) != 0.000000) {
+					double mult = -*(*(matrix + posmainval) + posmainval) / *(*(matrix + i) + j);
+					for (int k = 0; k < columns; k++) {
+						*(*(matrix + i) + k) = *(*(matrix + i) + k) * mult + *(*(matrix + posmainval) + k);
+					}
+				}
+			}
+			posmainval++;
+		}
+		puts("-----------------------------Calculate-----------------------------\n");
+		for (int i = 0; i < lines; i++) {
+			for (int j = 0; j < columns; j++) {
+				printf("%8.2lf", *(*(matrix + i) + j));
+				if (j == columns - 2) printf(" |");
+			}
+			puts("");
+		}
+		puts("\n-------------------------------------------------------------------");
+	}
+
+	posmainval = lines - 1;
+	for (int j = columns - 2; j >= 0; j--) {
+		if (Check2(matrix, lines, columns, j) == 1) {
+			printf("The system has an infinitely many solutions\n");
+			return 0;
+		}
+		else {
+			for (int i = j - 1; i >= 0; i--) {
+				if (*(*(matrix + i) + j) != 0.000000) {
+					double mult = *(*(matrix + posmainval) + posmainval) / *(*(matrix + i) + j);
+					for (int k = columns - 1; k >= 0; k--) {
+						*(*(matrix + i) + k) = *(*(matrix + i) + k) * mult - *(*(matrix + posmainval) + k);
+					}
+				}
+			}
+			posmainval--;
+		}
+		puts("-----------------------------Calculate-----------------------------\n");
+		for (int i = 0; i < lines; i++) {
+			for (int j = 0; j < columns; j++) {
+				printf("%8.2lf", *(*(matrix + i) + j));
+				if (j == columns - 2) printf(" |");
+			}
+			puts("");
+		}
+		puts("\n-------------------------------------------------------------------");
+	}
+
+	for (int i = 0; i < lines; i++) {
+		*(*(matrix + i) + columns - 1) /= *(*(matrix + i) + i);
+		*(*(matrix + i) + i) = 1;
+	}
+
+	puts("----------------------------New matrix-----------------------------\n");
+	for (int i = 0; i < lines; i++) {
+		for (int j = 0; j < columns; j++) {
+			printf("%8.2lf", *(*(matrix + i) + j));
+			if (j == columns - 2) printf(" |");
+		}
+		puts("");
+	}
+	puts("\n-------------------------------------------------------------------");
+
+	puts("---------------------------The solution----------------------------\n");
+	for (int i = 0; i < lines; i++) {
+		printf("a%d = %8.2lf\n", i, *(*(matrix + i) + columns - 1));
+	}
+	puts("\n-------------------------------------------------------------------\n");
+	return 0;
+}
